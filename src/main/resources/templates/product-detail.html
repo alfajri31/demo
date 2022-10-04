@@ -1,0 +1,16 @@
+<title>product detail</title>
+<link rel="stylesheet" href="/webjars/bootstrap/4.6.1/css/bootstrap.min.css">
+<script src="/webjars/jquery/3.6.1/jquery.min.js"></script>
+
+<div class="container-fluid my-5">
+    <div class="row my-4">
+        <div class="item-class square rounded p-5 bg-danger col-3 mx-5"  th:value="${productDetail.getId()}">Go To Detail</div>
+        <div class="col-5 my-5">
+            <div><td th:text="${productDetail.getProductName()}" /></div>
+            <div>Rp. <td th:text="${productDetail.getPrice()}" /></div>
+            <div>
+                <button class="bg-danger py-2 px-5 my-5">BUY</button>
+            </div>
+        </div>
+    </div>
+</div>

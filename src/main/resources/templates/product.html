@@ -1,0 +1,39 @@
+<title>Product List</title>
+<link rel="stylesheet" href="/webjars/bootstrap/4.6.1/css/bootstrap.min.css">
+<script src="/webjars/jquery/3.6.1/jquery.min.js"></script>
+
+
+<div class="container-fluid mx-5 my-5">
+    <tr th:each="product: ${products}">
+        <div class="row my-4">
+            <div class="item-class square rounded p-5 bg-danger col-3"  th:value="${product.getId()}">Go To Detail</div>
+            <div class="col-5 my-5">
+                <div><td th:text="${product.getProductName()}" /></div>
+                <div>Rp. <td th:text="${product.getPrice()}" /></div>
+            </div>
+            <div class="col-4">
+                <button class="bg-danger py-2 px-5 my-5">BUY</button>
+            </div>
+        </div>
+    </tr>
+</div>
+<div class="mx-auto text-center">
+    <button class="btn-danger">Checkout</button>
+</div>
+
+<script>
+    $(document).ready(function(){
+        let itemId;
+        $(".item-class").click(function () {
+            itemId = $(this).attr('value');
+            // alert();
+            // $.ajax({
+            //     type: "GET",
+            //     url: "/product-detail/"+itemId
+            // })
+            window.location.replace(window.location.origin+"/product-detail/"+itemId);
+        });
+    })
+
+</script>
+
