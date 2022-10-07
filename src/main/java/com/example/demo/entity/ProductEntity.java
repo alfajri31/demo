@@ -1,14 +1,15 @@
 package com.example.demo.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
 public class ProductEntity {
-    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Id
     @Column(length = 18)
     private String productCode;
     @Column(length = 30)
@@ -22,6 +23,10 @@ public class ProductEntity {
     private String dimension;
     @Column(length = 5)
     private String unit;
+    private Integer quantity;
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "productEntity")
+    private List<CheckoutEntity> checkoutEntity;
 
     public Integer getId() {
         return id;
@@ -85,5 +90,21 @@ public class ProductEntity {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Integer getQuantity() {
+        return this.quantity;
+    }
+
+    public List<CheckoutEntity> getCheckoutEntity() {
+        return checkoutEntity;
+    }
+
+    public void setCheckoutEntity(List<CheckoutEntity> checkoutEntity) {
+        this.checkoutEntity = checkoutEntity;
     }
 }

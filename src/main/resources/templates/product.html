@@ -5,34 +5,57 @@
 
 <div class="container-fluid mx-5 my-5">
     <tr th:each="product: ${products}">
-        <div class="row my-4">
-            <div class="item-class square rounded p-5 bg-danger col-3"  th:value="${product.getId()}">Go To Detail</div>
+        <div class="row my-4 border border-primary mx-auto p-2">
+            <div class="item-class p-5 bg-primary col-2 mx-5 text-white"  th:value="${product.getProductCode()}">Go To Detail</div>
             <div class="col-5 my-5">
                 <div><td th:text="${product.getProductName()}" /></div>
                 <div>Rp. <td th:text="${product.getPrice()}" /></div>
             </div>
-            <div class="col-4">
-                <button class="bg-danger py-2 px-5 my-5">BUY</button>
+            <div class="col-3 mt-4">
+                <span href="/product" class="item-buy text-decoration-none text-white p-3 btn btn-danger" th:value="${product.getProductCode()}">BUY</span>
             </div>
         </div>
     </tr>
 </div>
 <div class="mx-auto text-center">
-    <button class="btn-danger">Checkout</button>
+    <button class="btn-danger"><a class="text-white text-decoration-none" href="/checkout">Checkout</a></button>
 </div>
 
-<script>
+<script th:inline="javascript">
     $(document).ready(function(){
         let itemId;
+        let itemBuy;
         $(".item-class").click(function () {
             itemId = $(this).attr('value');
-            // alert();
-            // $.ajax({
-            //     type: "GET",
-            //     url: "/product-detail/"+itemId
-            // })
             window.location.replace(window.location.origin+"/product-detail/"+itemId);
         });
+        let responses = [];
+        $(".item-buy").click(async function () {
+            itemBuy = $(this).attr('value');
+            console.log(itemBuy);
+            $.ajax({
+                type: "POST",
+                url: "/single-product/"+itemBuy,
+                success: async function(response) {
+                    // if(window.localStorage.getItem('products')!==null) {
+                    //     const tmp = window.localStorage.getItem('products');
+                    //     const newResponses = JSON.parse(tmp);
+                    //     for(const data of newResponses) {
+                    //         if(response.id == data.id) {
+                    //             data.quantity= data.quantity + 1;
+                    //             data.price = data.price + response.price;
+                    //         }
+                    //     }
+                    //     window.localStorage.setItem("products",JSON.stringify(newResponses));
+                    // }
+                    // else {
+                    //     responses.push(response)
+                    //     window.localStorage.setItem('products', JSON.stringify(responses));
+                    // }
+                }
+            })
+        });
+
     })
 
 </script>

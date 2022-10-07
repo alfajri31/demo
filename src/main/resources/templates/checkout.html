@@ -1,0 +1,18 @@
+<title>Product List</title>
+<link rel="stylesheet" href="/webjars/bootstrap/4.6.1/css/bootstrap.min.css">
+<script src="/webjars/jquery/3.6.1/jquery.min.js"></script>
+
+
+<div class="container-fluid mx-5 my-5">
+    <tr th:each="checkout: ${checkoutList}">
+        <div class="row my-4 border border-primary mx-auto p-2">
+            <div class="item-class p-5 bg-primary col-2 mx-5 text-white"  th:value="${checkout.getProductEntity().getProductCode()}">Go To Detail</div>
+            <div class="col-5 my-5">
+                <div><td th:text="${checkout.getProductEntity().getProductName()}" /></div>
+                <div>Rp. <td th:text="${checkout.getProductEntity().getPrice()}" /></div>
+                <div>Qty : <td th:text="${checkout.getQuantity()}" /></div>
+            </div>
+        </div>
+    </tr>
+</div>
+

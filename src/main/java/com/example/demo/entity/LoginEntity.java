@@ -12,7 +12,7 @@ public class LoginEntity {
     @Column(length = 50)
     private String username;
     private String password;
-
+    private String token;
     public Long getId() {
         return id;
     }
@@ -35,5 +35,13 @@ public class LoginEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return this.token;
     }
 }

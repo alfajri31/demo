@@ -51,6 +51,7 @@ public class LoadData implements CommandLineRunner {
             productEntity.setDiscount(10);
             productEntity.setDimension("13xm x 10cm");
             productEntity.setUnit("PCS");
+            productEntity.setQuantity(1);
             productRepository.save(productEntity);
         }
 
