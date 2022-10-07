@@ -16,7 +16,7 @@
             </div>
             <form method="POST" action="/login">
                 <div class="form-group mt-2">
-                    <span th:if="${errorMessages!=null}"><span class="text-white py-2" th:text="${errorMessages.getMessage()}" /></br></span>
+                    <span th:if="${errorMessages!=null}"><span class="text-danger py-2" th:text="${errorMessages.getMessage()}" /></br></span>
                     <label for="exampleInputUsername">Username</label>
                     <input type="username" class="form-control" id="exampleInputUsername" name="username" aria-describedby="emailHelp" placeholder="Enter username">
                     <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>

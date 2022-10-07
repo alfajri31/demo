@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,19 +44,25 @@ public class LoginController {
 
     @PostMapping(value="login")
     public RedirectView viewProduct(RedirectAttributes redirectAttributes, @RequestParam HashMap<String, String> formData, HttpSession session) {
-        if(formData.get("username")!="") {
-            UserDetails userDetails = loginService.loadUserByUsername(formData.get("username"));
-            if (!userDetails.isEnabled()) {
-                ErrorMessages errorMessages = new ErrorMessages();
-                errorMessages.setMessage("wrong credential please use smith with password sm1t_OK");
-                redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
-                return new RedirectView("login");
+        try {
+            if(formData.get("username")!="") {
+                UserDetails userDetails = loginService.loadUserByUsername(formData.get("username"));
+                if (!userDetails.isEnabled()) {
+                    return new RedirectView("login");
+                }
+                String token = Jwts.builder().setSubject(String.valueOf(userDetails.getUsername())).setExpiration(
+                        new Date(System.currentTimeMillis() + Long.parseLong("864000000"))).signWith(SignatureAlgorithm.HS512,"fajrifajri").compact();
+                session.setAttribute("token",token);
+                return new RedirectView("product");
             }
-            String token = Jwts.builder().setSubject(String.valueOf(userDetails.getUsername())).setExpiration(
-                    new Date(System.currentTimeMillis() + Long.parseLong("864000000"))).signWith(SignatureAlgorithm.HS512,"fajrifajri").compact();
-            session.setAttribute("token",token);
-            return new RedirectView("product");
+            return new RedirectView("login");
         }
-        return new RedirectView("login");
+        catch(UsernameNotFoundException e) {
+            ErrorMessages errorMessages = new ErrorMessages();
+            errorMessages.setMessage("wrong credential please use smith with password sm1t_OK");
+            redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
+            return new RedirectView("login");
+        }
+
     }
 }
