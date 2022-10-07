@@ -8,11 +8,17 @@
     <div class="my-auto row w-100">
         <div class="bg-primary col-5 mx-auto">
             <h1 class="text-center"> Title </h1>
+            <div>
+                <span class="text-white">Username : smith</span>
+            </div>
+            <div>
+                <span class="text-white">Password : sm1t_OK</span>
+            </div>
             <form method="POST" action="/login">
-                <div class="form-group">
+                <div class="form-group mt-2">
                     <span th:if="${errorMessages!=null}"><span class="text-white py-2" th:text="${errorMessages.getMessage()}" /></br></span>
                     <label for="exampleInputUsername">Username</label>
-                    <input type="username" class="form-control" id="exampleInputUsername" name="username" aria-describedby="emailHelp" placeholder="Enter email">
+                    <input type="username" class="form-control" id="exampleInputUsername" name="username" aria-describedby="emailHelp" placeholder="Enter username">
                     <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                 </div>
                 <div class="form-group">
