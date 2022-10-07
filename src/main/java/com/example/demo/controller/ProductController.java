@@ -2,27 +2,32 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.CheckoutEntity;
 import com.example.demo.entity.ProductEntity;
+import com.example.demo.model.ErrorMessages;
 import com.example.demo.repository.CheckoutRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.TransactionDetailRepository;
 import com.example.demo.repository.TransactionHeaderRepository;
 import com.example.demo.service.IAuthenticationFacade;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,5 +108,21 @@ public class ProductController {
             return ResponseEntity.status(200).build();
         }
         return ResponseEntity.status(200).build();
+    }
+    @GetMapping(value = "product/add")
+    public String addProduct() {
+        return "add-product";
+    }
+
+    @PostMapping(value="product/add")
+    public String viewProduct(Model model, @RequestParam HashMap<String, String> formData, HttpSession session) {
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setProductName(formData.get("productName"));
+        productEntity.setProductCode(formData.get("productCode"));
+        productEntity.setPrice(Integer.parseInt(formData.get("price")));
+        productRepository.save(productEntity);
+        List<ProductEntity> productEntityList = productRepository.findAll();
+        model.addAttribute("products", productEntityList);
+        return "product";
     }
 }

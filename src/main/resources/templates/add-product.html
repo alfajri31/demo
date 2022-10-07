@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/webjars/bootstrap/4.6.1/css/bootstrap.min.css">
+    <script src="/webjars/jquery/3.6.1/jquery.min.js"></script>
+    <title>Tambah product</title>
+</head>
+<body>
+    <div>
+        <div class="my-5 row w-100">
+            <div class="bg-primary col-5 mx-auto">
+                <h1 class="text-center text-white"> Tambah product </h1>
+                <form method="POST" action="/product/add">
+                    <div class="form-group mt-2">
+                        <label for="exampleInputNamaProduct">Nama Product</label>
+                        <input type="productCode" class="form-control" id="exampleInputNamaProduct" name="productName" placeholder="nama produk">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputProductCode">Product Code</label>
+                        <input type="productCode" class="form-control" id="exampleInputProductCode" name="productCode" placeholder="productCode">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPrice">Product Code</label>
+                        <input type="price" class="form-control" id="exampleInputPrice" name="price" placeholder="price">
+                    </div>
+                    <div class="w-100 d-flex justify-content-center">
+                        <button type="submit"  id="getValBtnID" class="btn btn-danger">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
