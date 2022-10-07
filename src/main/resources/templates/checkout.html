@@ -3,7 +3,7 @@
 <script src="/webjars/jquery/3.6.1/jquery.min.js"></script>
 
 
-<div class="container-fluid mx-5 my-5">
+<div class="container-fluid mx-5 my-5 w-100">
     <tr th:each="checkout: ${checkoutList}">
         <div class="row my-4 border border-primary mx-auto p-2">
             <div class="item-class p-5 bg-primary col-2 mx-5 text-white"  th:value="${checkout.getProductEntity().getProductCode()}">Go To Detail</div>
@@ -14,5 +14,24 @@
             </div>
         </div>
     </tr>
+    <div class="container-fluid border border-primary mb-3"><span>Total :<div id="totalOrder"/> </span></div>
+    <div class="btn btn-danger p-3 d-flex justify-content-center">ORDER</div>
 </div>
+
+<script>
+
+    $(document).ready(function(){
+        let totalOrder=0;
+        $.ajax({
+            type: "GET",
+            url: "/product/total",
+            success: async function(response) {
+              totalOrder  = response.total;
+                $( "#totalOrder" ).append("<p>"+totalOrder+"</p>");
+            }
+        })
+
+
+    })
+</script>
 

@@ -30,7 +30,10 @@ public class OnceRequestPerFilter extends OncePerRequestFilter {
         if(uri.matches(environment.getProperty("login.path")) ||
                 uri.equals(environment.getProperty("bootstrap.path")) ||
                 uri.equals(environment.getProperty("jquery.path")) ||
-                uri.matches(environment.getProperty("h2.path")) ||  uri.equals("") || uri.equals("/")
+                uri.matches(environment.getProperty("h2.path")) ||
+                uri.equals("") ||
+                uri.equals("/") ||
+                uri.matches(environment.getProperty("product.path"))
         ) {
             filterChain.doFilter(request,response);
         }

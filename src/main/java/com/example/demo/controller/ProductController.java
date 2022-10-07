@@ -2,27 +2,18 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.CheckoutEntity;
 import com.example.demo.entity.ProductEntity;
-import com.example.demo.model.ErrorMessages;
+import com.example.demo.model.Total;
 import com.example.demo.repository.CheckoutRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.TransactionDetailRepository;
 import com.example.demo.repository.TransactionHeaderRepository;
 import com.example.demo.service.IAuthenticationFacade;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -30,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -124,5 +116,21 @@ public class ProductController {
         List<ProductEntity> productEntityList = productRepository.findAll();
         model.addAttribute("products", productEntityList);
         return "product";
+    }
+
+    @GetMapping(value = "product/total")
+    public ResponseEntity<Total> total(HttpServletRequest request) {
+        HttpSession session = request.getSession(true);
+        Object token = session.getAttribute("token");
+        List<CheckoutEntity> productEntityList = checkoutRepository.findAllByToken(token.toString());
+        AtomicReference<Integer> total = new AtomicReference<>(0);
+        if(productEntityList.toArray().length>0) {
+            productEntityList.forEach( v -> {
+                total.updateAndGet(v1 -> v1 + v.getProductEntity().getPrice());
+            });
+        }
+        Total total1 = new Total();
+        total1.setTotal(total);
+        return ResponseEntity.status(200).body(total1);
     }
 }
