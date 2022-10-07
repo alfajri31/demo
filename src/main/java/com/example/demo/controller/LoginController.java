@@ -43,16 +43,19 @@ public class LoginController {
 
     @PostMapping(value="login")
     public RedirectView viewProduct(RedirectAttributes redirectAttributes, @RequestParam HashMap<String, String> formData, HttpSession session) {
-        UserDetails userDetails = loginService.loadUserByUsername(formData.get("username"));
-        if (!userDetails.isEnabled()) {
-            ErrorMessages errorMessages = new ErrorMessages();
-            errorMessages.setMessage("wrong credential please use smith with password sm1t_OK");
-            redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
-            return new RedirectView("login");
+        if(formData.get("username")!="") {
+            UserDetails userDetails = loginService.loadUserByUsername(formData.get("username"));
+            if (!userDetails.isEnabled()) {
+                ErrorMessages errorMessages = new ErrorMessages();
+                errorMessages.setMessage("wrong credential please use smith with password sm1t_OK");
+                redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
+                return new RedirectView("login");
+            }
+            String token = Jwts.builder().setSubject(String.valueOf(userDetails.getUsername())).setExpiration(
+                    new Date(System.currentTimeMillis() + Long.parseLong("864000000"))).signWith(SignatureAlgorithm.HS512,"fajrifajri").compact();
+            session.setAttribute("token",token);
+            return new RedirectView("product");
         }
-        String token = Jwts.builder().setSubject(String.valueOf(userDetails.getUsername())).setExpiration(
-                new Date(System.currentTimeMillis() + Long.parseLong("864000000"))).signWith(SignatureAlgorithm.HS512,"fajrifajri").compact();
-        session.setAttribute("token",token);
-        return new RedirectView("product");
+        return new RedirectView("login");
     }
 }
