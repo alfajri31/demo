@@ -55,6 +55,16 @@ public class LoadData implements CommandLineRunner {
             productRepository.save(productEntity);
         }
 
+        if(transactionHeaderRepository.count()==0) {
+            TransactionHeaderEntity transactionHeaderEntity = new TransactionHeaderEntity();
+            transactionHeaderEntity.setDocumentCode("TRX");
+            transactionHeaderEntity.setDocumentNumber("001");
+            transactionHeaderEntity.setUsername("Smit");
+            transactionHeaderEntity.setTotal(67500);
+            transactionHeaderEntity.setDate(new Date());
+            transactionHeaderRepository.save(transactionHeaderEntity);
+        }
+
         if(transactionDetailRepository.count()==0) {
             TransactionDetailEntity transactionDetailEntity = new TransactionDetailEntity();
             transactionDetailEntity.setDocumentCode("TRX");
@@ -65,17 +75,10 @@ public class LoadData implements CommandLineRunner {
             transactionDetailEntity.setUnit("PCS");
             transactionDetailEntity.setSubTotal(67500);
             transactionDetailEntity.setCurrency("IDR");
-            transactionDetailRepository.save(transactionDetailEntity);
-        }
-
-        if(transactionHeaderRepository.count()==0) {
             TransactionHeaderEntity transactionHeaderEntity = new TransactionHeaderEntity();
-            transactionHeaderEntity.setDocumentCode("TRX");
-            transactionHeaderEntity.setDocumentNumber("001");
-            transactionHeaderEntity.setUsername("Smit");
-            transactionHeaderEntity.setTotal(67500);
-            transactionHeaderEntity.setDate(new Date());
-            transactionHeaderRepository.save(transactionHeaderEntity);
+            transactionHeaderEntity.setId(2L);
+            transactionDetailEntity.setTransactionHeaderEntity(transactionHeaderEntity);
+            transactionDetailRepository.save(transactionDetailEntity);
         }
     }
 }

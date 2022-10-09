@@ -34,6 +34,8 @@ public class CheckoutEntity {
     @JoinColumn(name = "product_code",insertable = false,updatable = false)
     private ProductEntity productEntity;
 
+    private Boolean status;
+
     public ProductEntity getProductEntity() {
         return productEntity;
     }
@@ -70,7 +72,11 @@ public class CheckoutEntity {
         return this.quantity;
     }
 
+    public Boolean getStatus() {
+        return status;
+    }
 
-
-
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
 }

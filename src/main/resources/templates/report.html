@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.6.1/css/bootstrap.min.css">
+    <script src="/webjars/jquery/3.6.1/jquery.min.js"></script>
+    <title>Report</title>
+</head>
+<body>
+<tr th:each="transaction: ${transactions}">
+    <div class="row my-4 border border-primary mx-auto p-2">
+        <div class="item-class p-5 bg-primary col-2 text-white"  th:value="${transaction.transactionDetailEntity.productCode}"></div>
+        <div class="col-5 my-5">
+            <div>product code : <td th:text="${transaction.transactionDetailEntity.productCode}" /></div>
+            <div>total : <td th:text="${transaction.transactionDetailEntity.subTotal}" /></div>
+        </div>
+    </div>
+</tr>
+</body>
+</html>

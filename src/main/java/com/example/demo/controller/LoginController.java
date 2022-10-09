@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.LoginEntity;
 import com.example.demo.model.ErrorMessages;
 import com.example.demo.repository.LoginRepository;
 import com.example.demo.repository.ProductRepository;
@@ -43,7 +42,7 @@ public class LoginController {
     }
 
     @PostMapping(value="login")
-    public RedirectView viewProduct(RedirectAttributes redirectAttributes, @RequestParam HashMap<String, String> formData, HttpSession session) {
+    public RedirectView viewProduct(Model model,RedirectAttributes redirectAttributes, @RequestParam HashMap<String, String> formData, HttpSession session) {
         try {
             if(formData.get("username")!="") {
                 UserDetails userDetails = loginService.loadUserByUsername(formData.get("username"));
@@ -52,7 +51,8 @@ public class LoginController {
                 }
                 String token = Jwts.builder().setSubject(String.valueOf(userDetails.getUsername())).setExpiration(
                         new Date(System.currentTimeMillis() + Long.parseLong("864000000"))).signWith(SignatureAlgorithm.HS512,"fajrifajri").compact();
-                session.setAttribute("token",token);
+//                session.setAttribute("token",token);
+                redirectAttributes.addFlashAttribute("token",token);
                 return new RedirectView("product");
             }
             return new RedirectView("login");

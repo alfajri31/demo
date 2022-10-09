@@ -9,5 +9,10 @@ import java.util.Optional;
 
 public interface CheckoutRepository extends JpaRepository<CheckoutEntity,Long> {
     List<CheckoutEntity> findAllByToken(String token);
+
+    List<CheckoutEntity> findAllByTokenAndStatusIsNull(String token);
+    Optional<CheckoutEntity> findByToken(String token);
+
     Optional<CheckoutEntity> findByTokenAndProductCode(String token,String productCode);
+    Optional<CheckoutEntity> findByTokenAndProductCodeAndStatusIsNull(String token,String productCode);
 }

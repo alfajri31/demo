@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "transaction_header")
@@ -16,6 +17,9 @@ public class TransactionHeaderEntity {
     private String username;
     private Integer total;
     private Date date;
+
+    @OneToOne(mappedBy = "transactionHeaderEntity")
+    private TransactionDetailEntity transactionDetailEntity;
 
     public Long getId() {
         return id;
@@ -63,5 +67,13 @@ public class TransactionHeaderEntity {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public TransactionDetailEntity getTransactionDetailEntity() {
+        return transactionDetailEntity;
+    }
+
+    public void setTransactionDetailEntity(TransactionDetailEntity transactionDetailEntity) {
+        this.transactionDetailEntity = transactionDetailEntity;
     }
 }

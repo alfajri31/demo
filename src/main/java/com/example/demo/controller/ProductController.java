@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.CheckoutEntity;
 import com.example.demo.entity.ProductEntity;
+import com.example.demo.model.TokenModel;
 import com.example.demo.model.Total;
 import com.example.demo.repository.CheckoutRepository;
 import com.example.demo.repository.ProductRepository;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -52,9 +54,12 @@ public class ProductController {
 //    }
 
     @GetMapping(value = "product")
-    public String viewProduct(Model model) {
+    public String viewProduct(Model model, HttpServletRequest request) {
         List<ProductEntity> productEntityList = productRepository.findAll();
         model.addAttribute("products", productEntityList);
+        HttpSession session = request.getSession(true);
+        Object token = session.getAttribute("token");
+        model.addAttribute("token",token.toString());
         return "product";
     }
 
@@ -89,7 +94,7 @@ public class ProductController {
             productEntity1.setId(productEntity.get().getId());
             productEntity1.setProductCode(productEntity.get().getProductCode());
             checkoutEntity.setProductEntity(productEntity1);
-            Optional<CheckoutEntity> checkoutEntityOptional = checkoutRepository.findByTokenAndProductCode(token.toString(),productEntity.get().getProductCode());
+            Optional<CheckoutEntity> checkoutEntityOptional = checkoutRepository.findByTokenAndProductCodeAndStatusIsNull(token.toString(),productEntity.get().getProductCode());
             if(checkoutEntityOptional.isPresent()) {
                 checkoutEntityOptional.get().setQuantity(checkoutEntityOptional.get().getQuantity()+1);
                 checkoutRepository.save(checkoutEntityOptional.get());
@@ -107,7 +112,7 @@ public class ProductController {
     }
 
     @PostMapping(value="product/add")
-    public String viewProduct(Model model, @RequestParam HashMap<String, String> formData, HttpSession session) {
+    public RedirectView viewProduct(Model model, @RequestParam HashMap<String, String> formData, HttpSession session) {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setProductName(formData.get("productName"));
         productEntity.setProductCode(formData.get("productCode"));
@@ -115,18 +120,16 @@ public class ProductController {
         productRepository.save(productEntity);
         List<ProductEntity> productEntityList = productRepository.findAll();
         model.addAttribute("products", productEntityList);
-        return "product";
+        return new RedirectView("/product");
     }
 
-    @GetMapping(value = "product/total")
-    public ResponseEntity<Total> total(HttpServletRequest request) {
-        HttpSession session = request.getSession(true);
-        Object token = session.getAttribute("token");
-        List<CheckoutEntity> productEntityList = checkoutRepository.findAllByToken(token.toString());
+    @PostMapping(value = "product/total")
+    public ResponseEntity<Total> total(@RequestBody TokenModel token) {
+        List<CheckoutEntity> productEntityList = checkoutRepository.findAllByTokenAndStatusIsNull(token.getToken());
         AtomicReference<Integer> total = new AtomicReference<>(0);
         if(productEntityList.toArray().length>0) {
             productEntityList.forEach( v -> {
-                total.updateAndGet(v1 -> v1 + v.getProductEntity().getPrice());
+                total.updateAndGet(v1 -> v1 + v.getProductEntity().getPrice() * v.getQuantity());
             });
         }
         Total total1 = new Total();

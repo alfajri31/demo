@@ -4,31 +4,56 @@
 
 
 <div class="container-fluid mx-5 my-5 w-100">
-    <tr th:each="checkout: ${checkoutList}">
-        <div class="row my-4 border border-primary mx-auto p-2">
-            <div class="item-class p-5 bg-primary col-2 mx-5 text-white"  th:value="${checkout.getProductEntity().getProductCode()}">Go To Detail</div>
-            <div class="col-5 my-5">
-                <div><td th:text="${checkout.getProductEntity().getProductName()}" /></div>
-                <div>Rp. <td th:text="${checkout.getProductEntity().getPrice()}" /></div>
-                <div>Qty : <td th:text="${checkout.getQuantity()}" /></div>
+    <tr id="checkout" th:value="${checkoutList}" th:each="checkout: ${checkoutList}">
+        <div th:if="${checkout.getStatus()==null}">
+            <div class="row my-4 border border-primary mx-auto p-2">
+                <div class="item-class p-5 bg-primary col-2 mx-5 text-white"  th:value="${checkout.getProductEntity().getProductCode()}">Go To Detail</div>
+                <div class="col-5 my-5">
+                    <div><span<td th:text="${checkout.getProductEntity().getProductName()}" /></div>
+                    <div>Rp. <td th:text="${checkout.getProductEntity().getPrice()}" /></div>
+                    <div>Qty : <td th:text="${checkout.getQuantity()}"/></div>
+                </div>
             </div>
         </div>
     </tr>
     <div class="container-fluid border border-primary mb-3"><span>Total :<div id="totalOrder"/> </span></div>
-    <div class="get-order btn btn-danger p-3 d-flex justify-content-center mb-3">ORDER</div>
+    <a class="get-order btn btn-danger p-3 d-flex justify-content-center mb-3" href="/product">ORDER</a>
 </div>
 
-<script>
+<script th:inline="javascript">
     $(document).ready(function(){
+        const token = window.localStorage.getItem("token");
         let totalOrder=0;
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/product/total",
+            dataType:"json",
+            contentType : "application/json",
+            data : JSON.stringify({
+                "token" : token
+            }),
             success: async function(response) {
               totalOrder  = response.total;
                 $( "#totalOrder" ).append("<p>"+totalOrder+"</p>");
             }
         })
+
+        $(".get-order").click(function () {
+            const token = window.localStorage.getItem("token");
+            $.ajax({
+                type: "POST",
+                url: "/product/order",
+                dataType:"json",
+                contentType : "application/json",
+                data : JSON.stringify({
+                  "token" : token
+                }),
+                success: async function(response) {
+                    totalOrder  = response.total;
+                    $( "#totalOrder" ).append("<p>"+totalOrder+"</p>");
+                }
+            })
+        });
 
 
     })

@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import org.hibernate.engine.profile.Fetch;
+
 import javax.persistence.*;
 
 @Entity
@@ -22,6 +24,18 @@ public class TransactionDetailEntity {
     private Integer subTotal;
     @Column(length = 5)
     private String currency;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transaction_header_entity_id")
+    private TransactionHeaderEntity transactionHeaderEntity;
+
+    public TransactionHeaderEntity getTransactionHeaderEntity() {
+        return transactionHeaderEntity;
+    }
+
+    public void setTransactionHeaderEntity(TransactionHeaderEntity transactionHeaderEntity) {
+        this.transactionHeaderEntity = transactionHeaderEntity;
+    }
 
     public Long getId() {
         return id;
