@@ -31,7 +31,8 @@ public class OnceRequestPerFilter extends OncePerRequestFilter {
                 uri.matches(environment.getProperty("singleProduct.path")) ||
                 uri.matches(environment.getProperty("checkout.path")) ||
                 uri.matches(environment.getProperty("order.path")) ||
-                uri.matches(environment.getProperty("report.path"))
+                uri.matches(environment.getProperty("report.path")) ||
+                uri.equals("/")
         ) {
             filterChain.doFilter(request,response);
         }
