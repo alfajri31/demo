@@ -13,6 +13,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class LoadData implements CommandLineRunner {
@@ -40,6 +41,12 @@ public class LoadData implements CommandLineRunner {
             loginEntity.setUsername("smith");
             loginEntity.setPassword("sm1t_OK");
             loginRepository.save(loginEntity);
+
+            LoginEntity loginEntity2 = new LoginEntity();
+            loginEntity2.setUsername("user");
+            loginEntity2.setPassword("user");
+            loginRepository.save(loginEntity2);
+
         }
 
         if(productRepository.count()==0) {
@@ -52,6 +59,11 @@ public class LoadData implements CommandLineRunner {
             productEntity.setDimension("13xm x 10cm");
             productEntity.setUnit("PCS");
             productEntity.setQuantity(1);
+            LoginEntity loginEntity = new LoginEntity();
+            loginEntity.setUsername("smith");
+            loginEntity.setPassword("sm1t_OK");
+            loginEntity.setId(1L);
+            productEntity.setLoginEntity(loginEntity);
             productRepository.save(productEntity);
         }
 
@@ -63,6 +75,16 @@ public class LoadData implements CommandLineRunner {
             transactionHeaderEntity.setTotal(67500);
             transactionHeaderEntity.setDate(new Date());
             transactionHeaderRepository.save(transactionHeaderEntity);
+
+            TransactionHeaderEntity transactionHeaderEntity2 = new TransactionHeaderEntity();
+            transactionHeaderEntity2.setDocumentCode("TRJ");
+            transactionHeaderEntity2.setDocumentNumber("002");
+            transactionHeaderEntity2.setUsername("user");
+            transactionHeaderEntity2.setTotal(67500);
+            transactionHeaderEntity2.setDate(new Date());
+            transactionHeaderRepository.save(transactionHeaderEntity2);
+            List<TransactionHeaderEntity> transactionHeaderEntityList = transactionHeaderRepository.findAll();
+            System.out.println(transactionHeaderEntityList);
         }
 
         if(transactionDetailRepository.count()==0) {
@@ -76,9 +98,23 @@ public class LoadData implements CommandLineRunner {
             transactionDetailEntity.setSubTotal(67500);
             transactionDetailEntity.setCurrency("IDR");
             TransactionHeaderEntity transactionHeaderEntity = new TransactionHeaderEntity();
-            transactionHeaderEntity.setId(2L);
+            transactionHeaderEntity.setId(3L);
             transactionDetailEntity.setTransactionHeaderEntity(transactionHeaderEntity);
             transactionDetailRepository.save(transactionDetailEntity);
+//
+            TransactionDetailEntity transactionDetailEntity2 = new TransactionDetailEntity();
+            transactionDetailEntity2.setDocumentCode("TRJ");
+            transactionDetailEntity2.setDocumentNumber("001");
+            transactionDetailEntity2.setProductCode("SKUSKILNP");
+            transactionDetailEntity2.setPrice(13500);
+            transactionDetailEntity2.setQuantity(5);
+            transactionDetailEntity2.setUnit("PCS");
+            transactionDetailEntity2.setSubTotal(67500);
+            transactionDetailEntity2.setCurrency("IDR");
+            TransactionHeaderEntity transactionHeaderEntity2 = new TransactionHeaderEntity();
+            transactionHeaderEntity2.setId(4L);
+            transactionDetailEntity2.setTransactionHeaderEntity(transactionHeaderEntity2);
+            transactionDetailRepository.save(transactionDetailEntity2);
         }
     }
 }

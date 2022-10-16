@@ -7,6 +7,8 @@ import com.example.demo.service.LoginService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -18,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Optional;
 
 @Controller
 @RequestMapping
@@ -37,12 +39,23 @@ public class LoginController {
     private LoginRepository loginRepository;
 
     @GetMapping(value = "login")
-    public String viewLogin(Model model) {
+    public RedirectView viewLogin(Model model, HttpServletRequest httpServletRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object username = httpServletRequest.getSession().getAttribute(authentication.getName());
+        if(username==null) {
+            return new RedirectView("/login/re");
+        }
+        return new RedirectView("/product");
+    }
+
+    @GetMapping(value = "login/re")
+    public String reLoginView() {
         return "login";
     }
 
+
     @PostMapping(value="login")
-    public RedirectView viewProduct(Model model,RedirectAttributes redirectAttributes, @RequestParam HashMap<String, String> formData, HttpSession session) {
+    public RedirectView viewProduct(Model model, RedirectAttributes redirectAttributes, @RequestParam HashMap<String, String> formData, HttpSession session) {
         try {
             if(formData.get("username")!="") {
                 UserDetails userDetails = loginService.loadUserByUsername(formData.get("username"));
@@ -51,7 +64,6 @@ public class LoginController {
                 }
                 String token = Jwts.builder().setSubject(String.valueOf(userDetails.getUsername())).setExpiration(
                         new Date(System.currentTimeMillis() + Long.parseLong("864000000"))).signWith(SignatureAlgorithm.HS512,"fajrifajri").compact();
-//                session.setAttribute("token",token);
                 redirectAttributes.addFlashAttribute("token",token);
                 return new RedirectView("product");
             }

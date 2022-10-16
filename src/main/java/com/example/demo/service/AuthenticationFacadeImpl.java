@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 public class AuthenticationFacadeImpl implements IAuthenticationFacade{
     @Override
     public Authentication getAuthentication() {
+        SecurityContextHolder.getContext();
         return SecurityContextHolder.getContext().getAuthentication();
     }
 }

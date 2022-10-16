@@ -28,6 +28,18 @@ public class ProductEntity {
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "productEntity")
     private List<CheckoutEntity> checkoutEntity;
 
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "userId",referencedColumnName = "id")
+    private LoginEntity loginEntity;
+
+    public LoginEntity getLoginEntity() {
+        return loginEntity;
+    }
+
+    public void setLoginEntity(LoginEntity loginEntity) {
+        this.loginEntity = loginEntity;
+    }
+
     public Integer getId() {
         return id;
     }

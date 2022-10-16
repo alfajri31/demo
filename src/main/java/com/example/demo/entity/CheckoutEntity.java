@@ -1,7 +1,5 @@
 package com.example.demo.entity;
 
-import org.hibernate.annotations.Fetch;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -15,6 +13,8 @@ public class CheckoutEntity {
     private String productCode;
     private Date date;
     private String token;
+
+    private String username;
 
     private Integer quantity;
 
@@ -78,5 +78,13 @@ public class CheckoutEntity {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

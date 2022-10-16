@@ -1,7 +1,5 @@
 package com.example.demo.entity;
 
-import org.hibernate.engine.profile.Fetch;
-
 import javax.persistence.*;
 
 @Entity

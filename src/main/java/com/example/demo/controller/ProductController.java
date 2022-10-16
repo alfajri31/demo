@@ -1,17 +1,18 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.CheckoutEntity;
+import com.example.demo.entity.LoginEntity;
 import com.example.demo.entity.ProductEntity;
 import com.example.demo.model.TokenModel;
 import com.example.demo.model.Total;
-import com.example.demo.repository.CheckoutRepository;
-import com.example.demo.repository.ProductRepository;
-import com.example.demo.repository.TransactionDetailRepository;
-import com.example.demo.repository.TransactionHeaderRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.IAuthenticationFacade;
+import com.example.demo.service.ILoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,12 @@ public class ProductController {
     @Autowired
     private IAuthenticationFacade iAuthenticationFacade;
 
+    @Autowired
+    private ILoginService iLoginService;
+
+    @Autowired
+    private LoginRepository loginRepository;
+
 //    @ModelAttribute("products")
 //    public List<ProductEntity> messages() {
 //        return productRepository.findAll();
@@ -55,11 +62,12 @@ public class ProductController {
 
     @GetMapping(value = "product")
     public String viewProduct(Model model, HttpServletRequest request) {
-        List<ProductEntity> productEntityList = productRepository.findAll();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<LoginEntity> loginEntityOptional2 = loginRepository.findByUsername(authentication.getName());
+        List<ProductEntity> productEntityList = productRepository.findAllByLoginEntity(loginEntityOptional2.get());
         model.addAttribute("products", productEntityList);
-        HttpSession session = request.getSession(true);
-        Object token = session.getAttribute("token");
-        model.addAttribute("token",token.toString());
+        Optional<LoginEntity> loginEntityOptional = loginRepository.findByUsername(authentication.getName());
+        model.addAttribute("token",loginEntityOptional.get().getToken());
         return "product";
     }
 
@@ -81,20 +89,20 @@ public class ProductController {
 
     @PostMapping(value = "single-product/{productCode}")
     public ResponseEntity<ProductEntity> buyProduct(@PathVariable String productCode, HttpServletRequest request) {
-        HttpSession session = request.getSession(true);
-        Object token = session.getAttribute("token");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<LoginEntity> loginEntityOptional = loginRepository.findByUsername(authentication.getName());
         Optional<ProductEntity> productEntity = productRepository.findById(productCode);
         if(productEntity.isPresent()) {
             CheckoutEntity checkoutEntity = new CheckoutEntity();
             checkoutEntity.setProductCode(productEntity.get().getProductCode());
             checkoutEntity.setDate(new Date());
-            checkoutEntity.setToken(token.toString());
+            checkoutEntity.setUsername(loginEntityOptional.get().getUsername());
             checkoutEntity.setQuantity(1);
             ProductEntity productEntity1 = new ProductEntity();
             productEntity1.setId(productEntity.get().getId());
             productEntity1.setProductCode(productEntity.get().getProductCode());
             checkoutEntity.setProductEntity(productEntity1);
-            Optional<CheckoutEntity> checkoutEntityOptional = checkoutRepository.findByTokenAndProductCodeAndStatusIsNull(token.toString(),productEntity.get().getProductCode());
+            Optional<CheckoutEntity> checkoutEntityOptional = checkoutRepository.findByTokenAndProductCodeAndStatusIsNull(loginEntityOptional.get().getToken(),productEntity.get().getProductCode());
             if(checkoutEntityOptional.isPresent()) {
                 checkoutEntityOptional.get().setQuantity(checkoutEntityOptional.get().getQuantity()+1);
                 checkoutRepository.save(checkoutEntityOptional.get());
@@ -113,10 +121,17 @@ public class ProductController {
 
     @PostMapping(value="product/add")
     public RedirectView viewProduct(Model model, @RequestParam HashMap<String, String> formData, HttpSession session) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         ProductEntity productEntity = new ProductEntity();
         productEntity.setProductName(formData.get("productName"));
         productEntity.setProductCode(formData.get("productCode"));
         productEntity.setPrice(Integer.parseInt(formData.get("price")));
+        Optional<LoginEntity> loginEntityOptional = loginRepository.findByUsername(authentication.getName());
+        LoginEntity loginEntity = new LoginEntity();
+        loginEntity.setUsername(loginEntityOptional.get().getUsername());
+        loginEntity.setPassword(loginEntityOptional.get().getPassword());
+        loginEntity.setId(loginEntityOptional.get().getId());
+        productEntity.setLoginEntity(loginEntity);
         productRepository.save(productEntity);
         List<ProductEntity> productEntityList = productRepository.findAll();
         model.addAttribute("products", productEntityList);

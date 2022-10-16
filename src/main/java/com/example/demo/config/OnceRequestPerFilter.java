@@ -6,15 +6,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.*;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import java.io.IOException;
 
 @Component
@@ -25,34 +22,34 @@ public class OnceRequestPerFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String uri = request.getRequestURI();
         if(uri.matches(environment.getProperty("login.path")) ||
                 uri.equals(environment.getProperty("bootstrap.path")) ||
                 uri.equals(environment.getProperty("jquery.path")) ||
                 uri.matches(environment.getProperty("h2.path")) ||
-                uri.equals("") ||
-                uri.equals("/") ||
-                uri.matches(environment.getProperty("product.path"))
+                uri.matches(environment.getProperty("product.path")) ||
+                uri.matches(environment.getProperty("singleProduct.path")) ||
+                uri.matches(environment.getProperty("checkout.path")) ||
+                uri.matches(environment.getProperty("order.path")) ||
+                uri.matches(environment.getProperty("report.path"))
         ) {
             filterChain.doFilter(request,response);
         }
         else {
-            HttpSession session = request.getSession(true);
-//            if(authHeader==null) {
-//                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//            }
-//            else {
-//                String jwt = authHeader.replace("Bearer","");
-                Object jwt = session.getAttribute("token");
-                if(!isJwtValid(jwt.toString())) {
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if(authHeader==null) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            }
+            else {
+                String jwt = authHeader.replace("Bearer","");
+                if(!isJwtValid(jwt)) {
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 }
                 else {
                     filterChain.doFilter(request,response);
                 }
             }
-//        }
+        }
     }
 
     private Boolean isJwtValid(String jwt) {
@@ -63,4 +60,6 @@ public class OnceRequestPerFilter extends OncePerRequestFilter {
         }
         return returnValue;
     }
+
+
 }

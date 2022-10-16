@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "login")
@@ -16,6 +17,9 @@ public class LoginEntity {
     public Long getId() {
         return id;
     }
+
+    @OneToMany(mappedBy = "loginEntity")
+    private List<ProductEntity> productEntityList;
 
     public void setId(Long id) {
         this.id = id;
