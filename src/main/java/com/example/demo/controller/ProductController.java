@@ -102,7 +102,7 @@ public class ProductController {
             productEntity1.setId(productEntity.get().getId());
             productEntity1.setProductCode(productEntity.get().getProductCode());
             checkoutEntity.setProductEntity(productEntity1);
-            Optional<CheckoutEntity> checkoutEntityOptional = checkoutRepository.findByTokenAndProductCodeAndStatusIsNull(loginEntityOptional.get().getToken(),productEntity.get().getProductCode());
+            Optional<CheckoutEntity> checkoutEntityOptional = checkoutRepository.findByUsernameAndProductCodeAndStatusIsNull(loginEntityOptional.get().getUsername(),productEntity.get().getProductCode());
             if(checkoutEntityOptional.isPresent()) {
                 checkoutEntityOptional.get().setQuantity(checkoutEntityOptional.get().getQuantity()+1);
                 checkoutRepository.save(checkoutEntityOptional.get());
@@ -140,7 +140,8 @@ public class ProductController {
 
     @PostMapping(value = "product/total")
     public ResponseEntity<Total> total(@RequestBody TokenModel token) {
-        List<CheckoutEntity> productEntityList = checkoutRepository.findAllByTokenAndStatusIsNull(token.getToken());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<CheckoutEntity> productEntityList = checkoutRepository.findAllByUsernameAndStatusIsNull(authentication.getName());
         AtomicReference<Integer> total = new AtomicReference<>(0);
         if(productEntityList.toArray().length>0) {
             productEntityList.forEach( v -> {

@@ -12,8 +12,8 @@ public interface CheckoutRepository extends JpaRepository<CheckoutEntity,Long> {
     List<CheckoutEntity> findAllByUsername(String token);
 
     List<CheckoutEntity> findAllByTokenAndStatusIsNull(String token);
-    Optional<CheckoutEntity> findByToken(String token);
+    List<CheckoutEntity> findAllByUsernameAndStatusIsNull(String username);
 
-    Optional<CheckoutEntity> findByTokenAndProductCode(String token,String productCode);
+    Optional<CheckoutEntity> findByUsernameAndProductCodeAndStatusIsNull(String username,String productCode);
     Optional<CheckoutEntity> findByTokenAndProductCodeAndStatusIsNull(String token,String productCode);
 }
