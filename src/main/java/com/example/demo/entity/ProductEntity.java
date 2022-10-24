@@ -29,6 +29,7 @@ public class ProductEntity {
     private List<CheckoutEntity> checkoutEntity;
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+//    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId",referencedColumnName = "id")
     private LoginEntity loginEntity;
 

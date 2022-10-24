@@ -8,11 +8,14 @@ import com.example.demo.repository.CheckoutRepository;
 import com.example.demo.repository.TransactionDetailRepository;
 import com.example.demo.repository.TransactionHeaderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Date;
 import java.util.List;
@@ -33,8 +36,10 @@ public class OrderController {
     private TransactionHeaderRepository transactionHeaderRepository;
 
     @PostMapping(value="product/order")
-    public void order(RedirectAttributes redirectAttributes,@RequestBody TokenModel tokenModel) {
-        List<CheckoutEntity> checkoutEntityList = checkoutRepository.findAllByToken(tokenModel.getToken());
+    public RedirectView order(RedirectAttributes redirectAttributes,@RequestBody TokenModel tokenModel) {
+//        List<CheckoutEntity> checkoutEntityList = checkoutRepository.findAllByToken(tokenModel.getToken());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<CheckoutEntity> checkoutEntityList = checkoutRepository.findAllByUsername(authentication.getName());
         AtomicReference<Integer> total = new AtomicReference<>(0);
         checkoutEntityList.forEach( o -> {
             o.setStatus(true);
@@ -60,6 +65,7 @@ public class OrderController {
             transactionDetailEntity.setTransactionHeaderEntity(transactionHeaderEntity1);
             transactionDetailRepository.save(transactionDetailEntity);
         });
+        return new RedirectView("/product");
     }
 
 }

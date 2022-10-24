@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
 @Configuration
@@ -62,7 +63,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(authenticationFilter(), AuthenticationFilter.class)
                 .authorizeRequests()
-                .anyRequest().authenticated().and().logout().addLogoutHandler(customLogoutSuccessHandler).invalidateHttpSession(true);
+                .anyRequest().authenticated().and().sessionManagement()
+                .and().logout().
+                addLogoutHandler(customLogoutSuccessHandler).invalidateHttpSession(true);
     }
 
     public AuthenticationFilter authenticationFilter() throws Exception {

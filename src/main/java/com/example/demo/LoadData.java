@@ -1,19 +1,13 @@
 package com.example.demo;
 
-import com.example.demo.entity.LoginEntity;
-import com.example.demo.entity.ProductEntity;
-import com.example.demo.entity.TransactionDetailEntity;
-import com.example.demo.entity.TransactionHeaderEntity;
-import com.example.demo.repository.LoginRepository;
-import com.example.demo.repository.ProductRepository;
-import com.example.demo.repository.TransactionDetailRepository;
-import com.example.demo.repository.TransactionHeaderRepository;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
+import javax.management.relation.Role;
+import java.util.*;
 
 @Component
 public class LoadData implements CommandLineRunner {
@@ -30,10 +24,17 @@ public class LoadData implements CommandLineRunner {
     @Autowired
     private TransactionHeaderRepository transactionHeaderRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PrivilegeRepository privilegeRepository;
+
     @Override
     public void run(String... args) throws Exception {
         loadUserData();
     }
+
 
     private void loadUserData() {
         if (loginRepository.count() == 0) {
@@ -41,11 +42,27 @@ public class LoadData implements CommandLineRunner {
             loginEntity.setUsername("smith");
             loginEntity.setPassword("sm1t_OK");
             loginRepository.save(loginEntity);
+            RoleEntity roleEntity = new RoleEntity();
+            roleEntity.setId(1L);
+            roleEntity.setName("ROLE_ADMIN");
+            List<LoginEntity> loginEntities = new ArrayList<>();
+            loginEntity.setId(1L);
+            loginEntities.add(loginEntity);
+            roleEntity.setLogins(loginEntities);
+            roleRepository.save(roleEntity);
 
             LoginEntity loginEntity2 = new LoginEntity();
             loginEntity2.setUsername("user");
             loginEntity2.setPassword("user");
             loginRepository.save(loginEntity2);
+            RoleEntity roleEntity2 = new RoleEntity();
+            roleEntity2.setId(3L);
+            roleEntity2.setName("ROLE_USER");
+            List<LoginEntity> loginEntities2 = new ArrayList<>();
+            loginEntity2.setId(3L);
+            loginEntities2.add(loginEntity2);
+            roleEntity2.setLogins(loginEntities2);
+            roleRepository.save(roleEntity2);
 
         }
 
@@ -98,7 +115,7 @@ public class LoadData implements CommandLineRunner {
             transactionDetailEntity.setSubTotal(67500);
             transactionDetailEntity.setCurrency("IDR");
             TransactionHeaderEntity transactionHeaderEntity = new TransactionHeaderEntity();
-            transactionHeaderEntity.setId(3L);
+            transactionHeaderEntity.setId(5L);
             transactionDetailEntity.setTransactionHeaderEntity(transactionHeaderEntity);
             transactionDetailRepository.save(transactionDetailEntity);
 //
@@ -112,9 +129,37 @@ public class LoadData implements CommandLineRunner {
             transactionDetailEntity2.setSubTotal(67500);
             transactionDetailEntity2.setCurrency("IDR");
             TransactionHeaderEntity transactionHeaderEntity2 = new TransactionHeaderEntity();
-            transactionHeaderEntity2.setId(4L);
+            transactionHeaderEntity2.setId(6L);
             transactionDetailEntity2.setTransactionHeaderEntity(transactionHeaderEntity2);
             transactionDetailRepository.save(transactionDetailEntity2);
         }
+
+        Optional<LoginEntity> loginEntityOptional = loginRepository.findById(1L);
+        RoleEntity roleEntity = new RoleEntity();
+        roleEntity.setId(2L);
+        List<LoginEntity> loginEntities = new ArrayList<>();
+        loginEntities.add(loginEntityOptional.get());
+        roleEntity.setLogins(loginEntities);
+        List<RoleEntity> roleEntityList = new ArrayList<>();
+        roleEntityList.add(roleEntity);
+        loginEntityOptional.get().setRoleEntities(roleEntityList);
+        loginEntityOptional.get().setRolesId(2L);
+        loginRepository.save(loginEntityOptional.get());
+
+        Optional<LoginEntity> loginEntityOptional2 = loginRepository.findById(3L);
+        RoleEntity roleEntity2 = new RoleEntity();
+        roleEntity2.setId(4L);
+        List<LoginEntity> loginEntities2 = new ArrayList<>();
+        loginEntities2.add(loginEntityOptional2.get());
+        roleEntity2.setLogins(loginEntities2);
+        List<RoleEntity> roleEntityList2 = new ArrayList<>();
+        roleEntityList2.add(roleEntity2);
+        loginEntityOptional2.get().setRoleEntities(roleEntityList2);
+        loginEntityOptional2.get().setRolesId(4L);
+        loginRepository.save(loginEntityOptional2.get());
+    }
+
+    private void loadRoleData() {
+
     }
 }

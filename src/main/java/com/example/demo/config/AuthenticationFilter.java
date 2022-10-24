@@ -25,6 +25,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
@@ -73,8 +74,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         loginEntityOptional.get().setToken(token);
         loginRepository.save(loginEntityOptional.get());
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-        Object object = new Object();
-        request.getSession().setAttribute(loginEntityOptional.get().getUsername(),object);
+        HttpSession newSession = request.getSession();
+        request.getSession().setAttribute(loginEntityOptional.get().getUsername(),new Object());
         redirectStrategy.sendRedirect(request, response, "/product");
     }
 
