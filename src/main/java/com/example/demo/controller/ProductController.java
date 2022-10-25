@@ -11,6 +11,7 @@ import com.example.demo.service.ILoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -61,6 +62,8 @@ public class ProductController {
 //    }
 
     @GetMapping(value = "product")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
+    //kalo preauthorize kasih enable web method security di web security
     public String viewProduct(Model model, HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<LoginEntity> loginEntityOptional2 = loginRepository.findByUsername(authentication.getName());

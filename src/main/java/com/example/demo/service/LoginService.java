@@ -14,9 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
+@Transactional
 public class LoginService implements ILoginService{
 
     @Autowired
@@ -35,35 +37,42 @@ public class LoginService implements ILoginService{
            throw new UsernameNotFoundException(username);
        }
        else {
-           return new User(loginEntity.get().getUsername(),passwordEncoder.encode(loginEntity.get().getPassword()),true,true,true,true, new ArrayList<>());
+           if(loginEntity.get().getRolesId()==2L) {
+               return new User(loginEntity.get().getUsername(),passwordEncoder.encode(loginEntity.get().getPassword()),true,true,true,true, getAuthorities(Arrays.asList(
+                       roleRepository.findByName("ROLE_ADMIN"))));
+           }
+           else {
+               return new User(loginEntity.get().getUsername(),passwordEncoder.encode(loginEntity.get().getPassword()),true,true,true,true, getAuthorities(Arrays.asList(
+                       roleRepository.findByName("ROLE_USER"))));
+           }
        }
     }
 
-//    private Collection<? extends GrantedAuthority> getAuthorities(
-//            Collection<RoleEntity> roles) {
-//
-//        return getGrantedAuthorities(getPrivileges(roles));
-//    }
-//
-//    private List<String> getPrivileges(Collection<RoleEntity> roles) {
-//
-//        List<String> privileges = new ArrayList<>();
-//        List<PrivilegeEntity> collection = new ArrayList<>();
-//        for (RoleEntity role : roles) {
-//            privileges.add(role.getName());
-//            collection.addAll(role.getPrivileges());
-//        }
-//        for (PrivilegeEntity item : collection) {
-//            privileges.add(item.getName());
-//        }
-//        return privileges;
-//    }
-//
-//    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        for (String privilege : privileges) {
-//            authorities.add(new SimpleGrantedAuthority(privilege));
-//        }
-//        return authorities;
-//    }
+    private Collection<? extends GrantedAuthority> getAuthorities(
+            Collection<RoleEntity> roles) {
+
+        return getGrantedAuthorities(getPrivileges(roles));
+    }
+
+    private List<String> getPrivileges(Collection<RoleEntity> roles) {
+
+        List<String> privileges = new ArrayList<>();
+        List<PrivilegeEntity> collection = new ArrayList<>();
+        for (RoleEntity role : roles) {
+            privileges.add(role.getName());
+            collection.addAll(role.getPrivileges());
+        }
+        for (PrivilegeEntity item : collection) {
+            privileges.add(item.getName());
+        }
+        return privileges;
+    }
+
+    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String privilege : privileges) {
+            authorities.add(new SimpleGrantedAuthority(privilege));
+        }
+        return authorities;
+    }
 }
