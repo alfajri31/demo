@@ -157,6 +157,29 @@ public class LoadData implements CommandLineRunner {
         loginEntityOptional2.get().setRoleEntities(roleEntityList2);
         loginEntityOptional2.get().setRolesId(4L);
         loginRepository.save(loginEntityOptional2.get());
+
+        PrivilegeEntity privilegeEntity = new PrivilegeEntity();
+        privilegeEntity.setName("READ_PRIVILEGE");
+        privilegeRepository.save(privilegeEntity);
+
+        PrivilegeEntity privilegeEntity2 = new PrivilegeEntity();
+        privilegeEntity2.setName("WRITE_PRIVILEGE");
+        privilegeRepository.save(privilegeEntity2);
+
+        List<PrivilegeEntity> privilegeEntityList = new ArrayList<>();
+        privilegeEntityList.add(privilegeEntity);
+        privilegeEntityList.add(privilegeEntity2);
+        Optional<RoleEntity> roleEntityPrivilege1 = roleRepository.findById(2L);
+        roleEntityPrivilege1.get().setPrivileges(privilegeEntityList);
+        roleRepository.save(roleEntityPrivilege1.get());
+
+        List<PrivilegeEntity> privilegeEntityList2 = new ArrayList<>();
+        privilegeEntityList2.add(privilegeEntity);
+        Optional<RoleEntity> roleEntityPrivilege2 = roleRepository.findById(4L);
+        roleEntityPrivilege2.get().setPrivileges(privilegeEntityList2);
+        roleRepository.save(roleEntityPrivilege2.get());
+
+
     }
 
     private void loadRoleData() {
