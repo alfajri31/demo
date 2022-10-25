@@ -74,8 +74,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         loginEntityOptional.get().setToken(token);
         loginRepository.save(loginEntityOptional.get());
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-        HttpSession newSession = request.getSession();
-        request.getSession().setAttribute(loginEntityOptional.get().getUsername(),new Object());
+//        HttpSession newSession = request.getSession();
+//        request.getSession().setAttribute(loginEntityOptional.get().getUsername(),new Object());
         redirectStrategy.sendRedirect(request, response, "/product");
     }
 
