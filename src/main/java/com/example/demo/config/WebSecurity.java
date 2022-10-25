@@ -55,7 +55,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 //                .authenticationEntryPoint(authenticationEntryPoint).
 //                 and().addFilter(authenticationFilter());
 
-        http.authorizeRequests()
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and().authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
@@ -65,9 +65,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(authenticationFilter(), AuthenticationFilter.class)
                 .authorizeRequests()
-                .anyRequest().authenticated().and().sessionManagement()
-                .and().logout().
-                addLogoutHandler(customLogoutSuccessHandler).invalidateHttpSession(true);
+                .anyRequest().authenticated().and()
+                .logout().
+                addLogoutHandler(customLogoutSuccessHandler);
     }
 
     public AuthenticationFilter authenticationFilter() throws Exception {
